@@ -1,0 +1,48 @@
+B77;10102;0c15-214, Final Assignment
+Map-Reduce Framework 
+Matt Sebek - msebek@
+
+To run this project, first build it from source. 
+The main "runner" files are located in Src, and
+are called:
+
+(Note: all of these should be run from the top-level project directory, 
+       so the tablets can be found appropriately.)
+
+- MainMain - starts up a whole cluster as threads, since this
+             is much easier than spinning them up individually
+
+- MainJustServer - start a default server instance (and a local pair of 
+             map and reduce workers, who don't have all the tablets)
+
+     To run this:
+     $ rmiregistry 15214 & ; this will start an external RMI registry...hoped I could avoid
+                        this, but no dice. Bit disappointed with RMI for this.
+     $ java -classpath bin MainJustServer
+
+             Additional options for this program:
+	      None. Note that you will need the hostname for this machine, 
+                    in order to pass it to the workers. 
+
+- MainJustWorkers
+      Default:
+      java -classpath bin MainJustWorkers
+             Spin up a complementary set of clients, that together with the
+             worker from the master server, will have a full set of tablets, 
+	     and will begin map-reduce
+
+      java -classpath bin MainJustWorkers 128.123.456.897
+             Spin up complementary set of workers who will search for a host
+             at the given hostname/ip.
+
+      java bin/MainJustClient
+             If you're feeling masochistic, you can spin up workers individually.
+      java -classpath bin MainJustWorkers uniqueServerName 
+                                           uniqueServePort masterHostname  "1,2,3"
+
+
+- PrefixGuess/Wordcount
+      java -classpath bin PrefixGuess 123.456.678.967 (master server IP/hostname)
+
+If things get weird, just modify these .java files directly, it's basically as hard
+and much more flexible. But you shouldn't need to.
