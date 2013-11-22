@@ -1,15 +1,14 @@
-
-
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 
-import edu.cmu.cs.cs214.hw6.MapTask;
-import edu.cmu.cs.cs214.hw6.ReduceTask;
 import edu.cmu.cs.cs214.hw6.master.Master;
-import edu.cmu.cs.cs214.hw6.tasks.PrefixGuessMapTask;
-import edu.cmu.cs.cs214.hw6.tasks.PrefixGuessReduceTask;
+import edu.cmu.cs.cs214.hw6.master.MasterImpl;
+import edu.cmu.cs.cs214.hw6.tasks.WordCountTaskFactory;
+import edu.cmu.cs.cs214.hw6.worker.MapWorkerImpl;
+import edu.cmu.cs.cs214.hw6.worker.ReduceWorkerImpl;
 
 /**
  * Submits a WordCount task to the cluster.
@@ -17,7 +16,7 @@ import edu.cmu.cs.cs214.hw6.tasks.PrefixGuessReduceTask;
  * @author msebek
  * 
  */
-public class PrefixGuess {
+public class WordCountRunner {
 
 	private Registry registry;
 	private Master remoteMaster;
@@ -26,24 +25,28 @@ public class PrefixGuess {
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			System.out
-					.println("Usage: java PrefixGuess " +
+					.println("Usage: java WordCount " +
 							"128.123.123.456 (the IP/hostname of the master server)");
 			System.out.println("Defaulting to localhost...");
-			new PrefixGuess("localhost");
+			new WordCountRunner("localhost");
 			return;
 		} else if(args.length == 1) {
 			System.out.printf("Submitting task to [%s]", args[0]);
-			new PrefixGuess(args[0]);
+			new WordCountRunner(args[0]);
 		}
 	}
 
-	public PrefixGuess(String masterHostName) {
+	public WordCountRunner(String masterHostName) {
 		// Grab the master
-		// Submit task
-		// end.
+		// Generate Runnables?
 		// Connect to Master.
 		while (true) {
 			try {
+				// Start the master
+				MasterImpl master = new MasterImpl("Gojira", masterHostName);
+				new Thread(master).run();
+				System.out.printf("Starting master...");
+				Thread.sleep(2000);
 				// Add self to registry
 				registry = LocateRegistry.getRegistry(masterHostName,
 						DEFAULT_MASTER_PORT);
@@ -51,11 +54,27 @@ public class PrefixGuess {
 				remoteMaster = (Master) registry.lookup("master");
 
 				// Produce map/reduce tasks
-				MapTask map = new PrefixGuessMapTask();
-				ReduceTask red = new PrefixGuessReduceTask();
-
-				remoteMaster.getMapReduceTasks(map, red);
-				// Add self.
+				WordCountTaskFactory mrfact = new WordCountTaskFactory();
+				
+				
+				// Make a list of filenames to run against
+				String[] inputFiles = {"C:\\workspace\\MapReduce\\assets\\tablets\\pg1.txt",
+				                       "C:\\workspace\\MapReduce\\assets\\tablets\\pg2.txt"};
+				remoteMaster.setTaskFactory(mrfact, Arrays.asList(inputFiles));
+				
+				// Start up mapper and reducer
+				MapWorkerImpl osaka = new MapWorkerImpl(masterHostName, 15110, "mapper1");
+				ReduceWorkerImpl chiba = new ReduceWorkerImpl(masterHostName, 18213, "reducer1");
+				
+				
+				// Spin up Map workers
+				new Thread(osaka).run();
+				// Spin up Reduce workers
+				new Thread(chiba).start();
+				
+				System.out.println("Workers started...");
+				Thread.sleep(5000);
+				remoteMaster.startMRJob();
 				System.out.println("Task submitted to master.");
 				break;
 			} catch (IOException e1) {
@@ -73,6 +92,10 @@ public class PrefixGuess {
 				} catch (InterruptedException ie) {
 				} finally {
 				}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				assert(false);
 			}
 		}
 	}

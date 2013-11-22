@@ -6,13 +6,7 @@ import java.util.Iterator;
  * A plug-in interface for the reduce portion of a map/reduce computation.
  */
 public interface ReduceTask {
-	/**
-	 * Returns the name of this task.  Your framework may use this name (or not use this
-	 * name) however you want.
-	 * @return The name of this task.
-	 */
-	public String getName();
-	
+
 	/**
 	 * Given a key and the results emitted for that key by the map portion of this
 	 * map/reduce computation, outputs the final key/value results for the computation
@@ -24,5 +18,7 @@ public interface ReduceTask {
 	 * @param emitter The <code>Emitter</code> being used to communicate the final results
 	 * of this computation to the map/reduce framework.
 	 */
-	public void execute(String key, Iterator<String> values, Emitter emitter);
+	public void configure(String key, Iterator<String> values, Emitter emitter);
+	
+	public void run();
 }

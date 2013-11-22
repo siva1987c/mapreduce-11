@@ -14,10 +14,12 @@ import edu.cmu.cs.cs214.hw6.MapTask;
  */
 public class PrefixGuessMapTask implements MapTask, Serializable {
 	private static final long serialVersionUID = 2665319920651030365L;
-
+	
 	@Override
-	public void execute(String documentName, InputStream documentContents,
-			Emitter emitter) {
+	public void execute(Emitter emitter) {
+		assert(false);
+		String documentName=null;
+		InputStream documentContents=null;
 		Scanner scanner = new Scanner(documentContents);
 		scanner.useDelimiter("\\W+");
 		while (scanner.hasNext()) {

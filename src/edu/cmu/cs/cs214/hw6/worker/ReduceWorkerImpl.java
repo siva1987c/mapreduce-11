@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.cmu.cs.cs214.hw6.Emitter;
-import edu.cmu.cs.cs214.hw6.GenericWorker;
 import edu.cmu.cs.cs214.hw6.ReduceTask;
 import edu.cmu.cs.cs214.hw6.emitter.MasterEmitter;
 import edu.cmu.cs.cs214.hw6.master.Master;

@@ -16,16 +16,9 @@ public interface MapWorker extends Worker {
 	 * @param tabletName
 	 * @throws RemoteException
 	 */
-	void dispatchMapTask(MapTask mt, String tabletName) throws RemoteException;
+	void dispatchMapTask(MapTask mt, String taskName) throws RemoteException;
 
 		
-	/**
-	 * Returns list of tablets hosted by this worker
-	 * @return Tablets hosted by worker
-	 * @throws RemoteException
-	 */
-	List<String> getTablets() throws RemoteException;
-	
 	/**
 	 * Stop a running map task if there is a map task running
 	 * Otherwise, clear state and prepare for another computation.

@@ -8,8 +8,8 @@ import java.rmi.registry.Registry;
 import edu.cmu.cs.cs214.hw6.MapTask;
 import edu.cmu.cs.cs214.hw6.ReduceTask;
 import edu.cmu.cs.cs214.hw6.master.Master;
-import edu.cmu.cs.cs214.hw6.tasks.WordCountMapTask;
-import edu.cmu.cs.cs214.hw6.tasks.WordCountReduceTask;
+import edu.cmu.cs.cs214.hw6.tasks.RisklessMapTask;
+import edu.cmu.cs.cs214.hw6.tasks.RisklessReduceTask;
 
 /**
  * Submits a WordCount task to the cluster.
@@ -17,7 +17,7 @@ import edu.cmu.cs.cs214.hw6.tasks.WordCountReduceTask;
  * @author msebek
  * 
  */
-public class WordCount {
+public class RisklessTask {
 
 	private Registry registry;
 	private Master remoteMaster;
@@ -26,21 +26,18 @@ public class WordCount {
 	public static void main(String[] args) {
 		if (args.length == 0) {
 			System.out
-					.println("Usage: java WordCount " +
+					.println("Usage: java RisklessTask " +
 							"128.123.123.456 (the IP/hostname of the master server)");
 			System.out.println("Defaulting to localhost...");
-			new WordCount("localhost");
+			new RisklessTask("localhost");
 			return;
 		} else if(args.length == 1) {
 			System.out.printf("Submitting task to [%s]", args[0]);
-			new WordCount(args[0]);
+			new RisklessTask(args[0]);
 		}
 	}
 
-	public WordCount(String masterHostName) {
-		// Grab the master
-		// Generate Runnables?
-		// Connect to Master.
+	public RisklessTask(String masterHostName) {
 		while (true) {
 			try {
 				// Add self to registry
@@ -49,12 +46,11 @@ public class WordCount {
 				// Get the Master object
 				remoteMaster = (Master) registry.lookup("master");
 
-				// Produce map/reduce tasks
-				MapTask map = new WordCountMapTask();
-				ReduceTask red = new WordCountReduceTask();
+				// Set Up MapReduce Tasks
+				MapTask map = new RisklessMapTask();
+				ReduceTask red = new RisklessReduceTask();
+				remoteMaster.setMapReduceTasks(map, red);
 
-				remoteMaster.getMapReduceTasks(map, red);
-				// Add self.
 				System.out.println("Task submitted to master.");
 				break;
 			} catch (IOException e1) {

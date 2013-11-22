@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.cmu.cs.cs214.hw6.MapTask;
 import edu.cmu.cs.cs214.hw6.ReduceTask;
+import edu.cmu.cs.cs214.hw6.TaskFactory;
 import edu.cmu.cs.cs214.hw6.worker.MapWorker;
 import edu.cmu.cs.cs214.hw6.worker.ReduceWorker;
 
@@ -65,6 +66,8 @@ public interface Master extends Remote {
 	 * @param red ReduceTask to run on the cluster
 	 * @throws RemoteException
 	 */
-	public void getMapReduceTasks(MapTask map, ReduceTask red) throws RemoteException;
-		 
+	public void setTaskFactory(TaskFactory tf, List<String> filenames) throws RemoteException;
+	
+	public void startMRJob() throws RemoteException;
+	
 }

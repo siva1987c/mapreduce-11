@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.cmu.cs.cs214.hw6.Emitter;
-import edu.cmu.cs.cs214.hw6.GenericWorker;
 import edu.cmu.cs.cs214.hw6.MapTask;
 import edu.cmu.cs.cs214.hw6.Tablet;
 import edu.cmu.cs.cs214.hw6.emitter.ShuffleEmitter;
@@ -36,30 +35,23 @@ import edu.cmu.cs.cs214.hw6.master.Master;
 public class MapWorkerImpl extends GenericWorker implements MapWorker {
 	
     private int servePort;
-    private List<String> tabletList; // List of tablets I can access
-    private List<Tablet> tablets = new ArrayList<Tablet>();
-       
-    
+   
     private List<Thread> runningThreads = Collections.synchronizedList(new ArrayList<Thread>());
     
-	public MapWorkerImpl(String masterHostname, int myServePort, String name, List<String> tabletNames) {
+	public MapWorkerImpl(String masterHostname, int myServePort, String name) {
 		super(masterHostname);
 		this.servePort = myServePort;
 		this.name = name;
-		this.tabletList = tabletNames;
-		for(String tabname : tabletNames) {
-			tablets.add(new Tablet(tabname));
-		}
-
 	}	
 	
-	public void dispatchMapTask(MapTask task, String tabletName) throws RemoteException {
+	public void dispatchMapTask(MapTask r) throws RemoteException {
 		// Set up the emitter.
 		List<ReduceWorker> reduceWorkers = remoteMaster.getReduceWorkers();
 		Emitter emitter = new ShuffleEmitter(reduceWorkers);
 		
-		DoMapTask mapper = new DoMapTask(task, emitter, tabletName);
-		Thread t1 = new Thread(mapper);
+		//DoMapTask mapper = new DoMapTask(task, emitter, tabletName);
+		r.configureEmitter(emitter);
+		Thread t1 = new Thread((Runnable)r);
 		t1.start();
 		runningThreads.add(t1);
 		log("Map Task dispatched");
@@ -72,7 +64,7 @@ public class MapWorkerImpl extends GenericWorker implements MapWorker {
 	 * @author msebek
 	 *
 	 */
-	class DoMapTask implements Runnable {
+	/*class DoMapTask implements Runnable {
 		private MapTask mt;
 		private Emitter em;
 		private String tab;
@@ -128,7 +120,7 @@ public class MapWorkerImpl extends GenericWorker implements MapWorker {
 			assert(false);
 			return null;
 		}
-	}
+	}*/
 
 	@Override
 	public String MapOrReduceWorker() throws RemoteException {
@@ -151,12 +143,6 @@ public class MapWorkerImpl extends GenericWorker implements MapWorker {
 	@Override
 	public int getObjectServePort() {
 		return this.servePort;
-	}
-
-
-	@Override
-	public List<String> getTablets() throws RemoteException {
-		return this.tabletList;
 	}
 
 	@Override

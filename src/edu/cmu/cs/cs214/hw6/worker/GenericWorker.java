@@ -1,4 +1,4 @@
-package edu.cmu.cs.cs214.hw6;
+package edu.cmu.cs.cs214.hw6.worker;
 
 import java.io.IOException;
 import java.rmi.AlreadyBoundException;
@@ -10,7 +10,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 
 import edu.cmu.cs.cs214.hw6.master.Master;
-import edu.cmu.cs.cs214.hw6.worker.Worker;
 
 /**
  * Extensible class that handles much of the shared functionality between
@@ -63,24 +62,19 @@ public abstract class GenericWorker implements Worker, Runnable {
 
 	public void start() {
 		// Connect to Master.
-		while (true) {
+		int retries = 0;
+		int retry_limit = 6;
+		while (retries < retry_limit) {
 			try {
-				// Add self to registry
 				remoteRegistry = LocateRegistry.getRegistry(this.masterHostname, DEFAULT_MASTER_PORT);
-				// Get the Master object
 				remoteMaster = (Master) remoteRegistry.lookup("master");
-
-				// Add self.
-				Worker stub = (Worker) UnicastRemoteObject.exportObject(this,
-						getObjectServePort());
-
-				
+		
 				if (DEBUG_RMI)
-					log("RMI Server Opened.");
+					log("Connected to remote RMI.");
 
 				// Register with Map/Reduce worker with master (not registry stuff)
 				registerWorker(remoteMaster);
-				break;
+				return;
 			} catch (IOException e1) {
 				log("Could not connect to " + this.masterHostname + ", port "
 						+ DEFAULT_MASTER_PORT + " Retrying...");
@@ -100,6 +94,8 @@ public abstract class GenericWorker implements Worker, Runnable {
 				}
 			}
 		}
+		// Hard Exit. Nothing to clean up.
+		assert(false);
 	}
 
     /**
