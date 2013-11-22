@@ -39,8 +39,7 @@ public class WordCount {
 
 	public WordCount(String masterHostName) {
 		// Grab the master
-		// Submit task
-		// end.
+		// Generate Runnables?
 		// Connect to Master.
 		while (true) {
 			try {

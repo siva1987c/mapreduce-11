@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import edu.cmu.cs.cs214.hw6.MapTask;
-import edu.cmu.cs.cs214.hw6.master.Worker;
 
 public interface MapWorker extends Worker {
 	

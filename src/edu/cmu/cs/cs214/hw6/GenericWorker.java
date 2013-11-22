@@ -10,7 +10,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 
 import edu.cmu.cs.cs214.hw6.master.Master;
-import edu.cmu.cs.cs214.hw6.master.Worker;
+import edu.cmu.cs.cs214.hw6.worker.Worker;
 
 /**
  * Extensible class that handles much of the shared functionality between

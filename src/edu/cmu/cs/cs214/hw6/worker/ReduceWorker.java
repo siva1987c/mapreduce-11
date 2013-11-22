@@ -3,7 +3,6 @@ package edu.cmu.cs.cs214.hw6.worker;
 import java.rmi.RemoteException;
 
 import edu.cmu.cs.cs214.hw6.ReduceTask;
-import edu.cmu.cs.cs214.hw6.master.Worker;
 
 public interface ReduceWorker extends Worker {
 
