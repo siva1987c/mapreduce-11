@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
@@ -28,18 +29,7 @@ public class SpinUpCluster {
 			return;
 		} else if(args.length == 1) {
 			System.out.printf("Adding machines to cluster...", args[0]);
-			Process p = Runtime.getRuntime().exec("ssh myhost");
-			PrintStream out = new PrintStream(p.getOutputStream());
-			BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream());
-
-			out.println("ls -l /home/me");
-			while (in.ready()) {
-			  String s = in.readLine();
-			  System.out.println(s);
-			}
-			out.println("exit");
-
-			p.waitFor();
+			launchMapper("unix5.andrew.cmu.edu");
 		}
 	}
 	/**
@@ -49,15 +39,29 @@ public class SpinUpCluster {
 	 */
 	private static void launchMapper(String hostname) {
 		String sshString = String.format("ssh -K %s", hostname);
-		Process p = Runtime.getRuntime().exec(sshString);
+		Runtime r = Runtime.getRuntime();
+		Process p = null;
+		try {
+			p = r.exec(sshString);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assert(false);
+		}
 		PrintStream out = new PrintStream(p.getOutputStream());
-		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream());
+		BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
 		// We are now logged into the host. 
 		out.println("ls ~");
-		while (in.ready()) {
-		  String s = in.readLine();
-		  System.out.println(s);
+		try {
+			while (in.ready()) {
+			  String s = in.readLine();
+			  System.out.println(s);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			assert(false);
 		}
 		out.println("exit");
 		
